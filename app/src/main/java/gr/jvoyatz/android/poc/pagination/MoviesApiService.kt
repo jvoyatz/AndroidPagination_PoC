@@ -12,7 +12,7 @@ interface MoviesApiService {
     @GET("movie/top_rated")
     suspend fun getTopRatedMovies(
         @Query("api_key") api_key: String,
-        @Query("language") language: String,
+        @Query("language") language: String = "en-US",
         @Query("page") page: Int
     ): Response<MovieResponse>
 

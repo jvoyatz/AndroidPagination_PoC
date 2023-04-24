@@ -1,5 +1,9 @@
 package gr.jvoyatz.android.poc.pagination
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import kotlinx.coroutines.flow.Flow
 import timber.log.Timber
 
 private const val API_KEY = "e8d648003bd11b5c498674fbd4905525"
@@ -18,5 +22,20 @@ class MoviesRepository(
                 Timber.i("list.size = ${list.size} + listToSet.size = ${list.toSet().size}")
             }
         }
+    }
+
+
+    fun getMoviesPagination(): Flow<PagingData<Movie>>{
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
+                initialLoadSize = 2
+            ),
+            pagingSourceFactory = {
+                MoviePagingSource(apiService)
+            }
+            , initialKey = 1
+        ).flow
     }
 }
