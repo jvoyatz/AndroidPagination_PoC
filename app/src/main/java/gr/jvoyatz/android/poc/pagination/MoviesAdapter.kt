@@ -1,7 +1,7 @@
 package gr.jvoyatz.android.poc.pagination
 
+import android.nfc.tech.MifareUltralight.PAGE_SIZE
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import gr.jvoyatz.android.poc.pagination.databinding.ItemMovieBinding
 import gr.jvoyatz.android.poc.pagination.databinding.ProgressbarBinding
 import timber.log.Timber
+
 
 class MoviesAdapter(val loadMore: () -> Unit): ListAdapter<Movie, RecyclerView.ViewHolder>(MovieComparator) {
 
@@ -45,25 +46,52 @@ class MoviesAdapter(val loadMore: () -> Unit): ListAdapter<Movie, RecyclerView.V
         recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-
                 var layoutManager = recyclerView.layoutManager as GridLayoutManager
-                val itemCount = layoutManager.itemCount
-                val lastVisibleItem =
-                    layoutManager.findLastCompletelyVisibleItemPosition()
-
-                Timber.d(" [itemcount=$itemCount] <= [lastVisibleItem = $lastVisibleItem + threshold = 1] --> ${itemCount <= (lastVisibleItem + 1)}")
-                if(!currentList.isEmpty() && (currentList.last().id != TYPE_PROGRESS &&
-                    (itemCount <= (lastVisibleItem + 1)))){
+                val isLoading = currentList.isNotEmpty() && currentList.last().id == TYPE_PROGRESS
+                val isLastPage = false
+                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+                val totalItemCount = layoutManager.itemCount
+                Timber.d("lastVisibleItemPosition $lastVisibleItemPosition && isLoading = $isLoading & totalItemCount=$totalItemCount")
+                if(/*newState == 0 &&*/ !isLoading && totalItemCount == lastVisibleItemPosition + 1){
                     Timber.d("show loading and get more!!!!!!!!")
                     showLoading()
                     loadMore()
                 }
-
             }
+
+//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                super.onScrolled(recyclerView, dx, dy)
+//                var layoutManager = recyclerView.layoutManager as GridLayoutManager
+//
+////                val visibleItemCount = layoutManager.childCount
+////                val totalItemCount = layoutManager.itemCount
+////                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+////                val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
+////                val isLoading = currentList.isNotEmpty() && currentList.last().id == TYPE_PROGRESS
+////                val isLastPage = false
+////
+////                Timber.d("visibleItemCount = [$visibleItemCount], totalItemCount = [$totalItemCount], firstVisibleItemPosition=$firstVisibleItemPosition, lastVisibleItemPosition = $lastVisibleItemPosition, isLoading = $isLoading  ")
+////
+////                val condition1 = (totalItemCount <= lastVisibleItemPosition + 10)
+////                val condition2 = (visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+////
+////                if (!isLoading && !isLastPage) {
+////                    if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && firstVisibleItemPosition >= 0 /*&& totalItemCount >= PAGE_SIZE*/) {
+////                  //  if(condition1){
+////                        Timber.d("show loading and get more!!!!!!!!")
+////                        showLoading()
+////                        loadMore()
+////                    }
+////                }
+//
+////                if (!isLoading) {
+////                    if (layoutManager.findLastCompletelyVisibleItemPosition() == (currentList.size - 1)){
+////                        Timber.d("show loading and get more!!!!!!!!")
+////                        showLoading()
+////                        loadMore()
+////                    }
+////                }
+//            }
         })
     }
 

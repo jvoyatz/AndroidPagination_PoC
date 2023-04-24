@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.moviesFlow.collect{
-                    Timber.d("list ${moviesAdapter.currentList}")
+                    Timber.i("adapterlist.size =  ${moviesAdapter.currentList.size}")
                     val updatedList = moviesAdapter.currentList.filter { movie ->
                         movie.id != MoviesAdapter.TYPE_PROGRESS
                     }
